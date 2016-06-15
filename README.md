@@ -45,6 +45,8 @@ A streaming video recorder using [electron](https://github.com/electron/electron
 </html>
 ```
 
+<video src="example/test.mp4" />
+
 # Install
 
 First, you need to install electron.
