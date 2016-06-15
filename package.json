@@ -12,7 +12,7 @@
     "electron-prebuilt": "^1.2.2"
   },
   "scripts": {
-    "test": "electron example/index.js"
+    "test": "electron example/index.html"
   },
   "repository": {
     "type": "git",

@@ -6,46 +6,39 @@ A streaming video recorder using [electron](https://github.com/electron/electron
 ```html
 <html>
   <body>
-    <h1>Test</h1>
+    <h1>Test Movie</h1>
     <script>
       const electron = require('electron')
-      const createRecorder = require('electron-recorder')
-      const fs = require('fs')
+      const createVideoRecorder = require('../index')
 
-      // First we create a recorder object
-      const recorder = createRecorder(electron.remote.getCurrentWindow(), {
-        fps: 30
+      const win = electron.remote.getCurrentWindow()
+
+      win.setSize(200, 200)
+
+      const video = createVideoRecorder(win, {
+        fps: 60,
+        output: 'test.mp4'
       })
 
-      // This pipes the output to example.mkv
-      // By default movies are saved in the matrosk format
-      //  https://en.wikipedia.org/wiki/Matroska
-      recorder.stream.pipe(fs.createWriteStream('example.mkv'))
-
-      // Next we implement a function to render a frame of each animation
       let frameCount = 360
-      function renderFrame (err) {
-        if (err) {
-          console.log('error rendering frame: ', err)
-          return
-        }
-
-        // Here we render the changes to the screen
+      function renderFrame () {
         const tag = document.querySelector('h1')
+
         Object.assign(tag.style, {
+          'width': 100,
+          'margin-left': 50,
+          'margin-top': 50,
           '-webkit-transform': 'rotate(' + frameCount + 'deg)'
         })
 
-        // If there are still frames to render, then append a snapshot to the
-        // video and schedule another callback
         if (--frameCount > 0) {
           video.frame(renderFrame)
         } else {
-          // Otherwise, we end the video and close the window
           video.end()
-          electron.remote.getCurrentWindow().close()
+          win.close()
         }
       }
+
       renderFrame()
     </script>
   </body>
