@@ -2,30 +2,15 @@ var spawn = require('child_process').spawn
 
 module.exports = createMovieRecorderStream
 
-function createMovieRecorderStream (options_) {
+function createMovieRecorderStream (win, options_) {
   var options = options_ || {}
 
-  var win = options.window
   if (!win) {
     throw new Error('electron-animator: you must specify a BrowserWindow')
   }
 
   var ffmpegPath = options.ffmpeg || 'ffmpeg'
-
   var fps = options.fps || 60
-
-  var bounds = win.getBounds()
-  var x = options.x || 0
-  var y = options.y || 0
-  var width = (options.width || (bounds.width - x)) | 0
-  var height = (options.height || (bounds.height - y)) | 0
-
-  var captureRect = {
-    x: x,
-    y: y,
-    width: width,
-    height: height
-  }
 
   var args = [
     '-y',
@@ -60,7 +45,7 @@ function createMovieRecorderStream (options_) {
     // usually it works the second time.
     function tryCapture () {
       try {
-        win.capturePage(captureRect, function (image) {
+        win.capturePage(function (image) {
           var jpeg = image.toJpeg(100)
           if (jpeg.length === 0) {
             setTimeout(tryCapture, 10)
@@ -84,7 +69,7 @@ function createMovieRecorderStream (options_) {
   var result = {
     frame: appendFrame,
     end: endMovie,
-    err: ffmpeg.stderr
+    log: ffmpeg.stderr
   }
 
   if (!outFile) {

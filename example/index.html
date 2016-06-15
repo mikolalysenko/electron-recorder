@@ -5,10 +5,9 @@
       const electron = require('electron')
       const createVideoRecorder = require('../index')
 
-      const video = createVideoRecorder({
+      const video = createVideoRecorder(electron.remote.getCurrentWindow(), {
         fps: 30,
-        output: 'test.mp4',
-        window: electron.remote.getCurrentWindow()
+        output: 'test.mp4'
       })
 
       let frameCount = 360
