@@ -10,12 +10,15 @@ Here is a simple page showing how to use `electron-recorder` to create a movie:
     <h1>Test Movie</h1>
     <script>
       const electron = require('electron')
-      const createVideoRecorder = require('../index')
+      const createVideoRecorder = require('electron-recorder')
 
+      // First we grab a reference to the current window object
       const win = electron.remote.getCurrentWindow()
 
+      // The size of the animation is the same as the size of the window
       win.setSize(200, 200)
 
+      // Here we create recorder object
       const video = createVideoRecorder(win, {
         fps: 60,
         output: 'test.mp4'
@@ -23,18 +26,20 @@ Here is a simple page showing how to use `electron-recorder` to create a movie:
 
       let frameCount = 360
       function renderFrame () {
-        const tag = document.querySelector('h1')
-
-        Object.assign(tag.style, {
+        // Here is where we render the movie (we just make the text rotate)
+        Object.assign(document.querySelector('h1').style, {
           'width': 100,
           'margin-left': 50,
           'margin-top': 50,
           '-webkit-transform': 'rotate(' + frameCount + 'deg)'
         })
 
+        // If we still have frames left, then take a snapshot and schedule
+        // another frame
         if (--frameCount > 0) {
           video.frame(renderFrame)
         } else {
+          // Otherwise, movie is over and we save the snapshot to file
           video.end()
           win.close()
         }
