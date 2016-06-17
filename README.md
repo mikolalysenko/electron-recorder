@@ -57,7 +57,7 @@ Suppose that this was saved to a file called `index.html`.  Then we could run th
 electron index.html
 ```
 
-And once it is done, we should get the follow
+And once it is done, we should get the following:
 
 [![Result](http://img.youtube.com/vi/1p14KdH0jn8/0.jpg)](https://youtu.be/1p14KdH0jn8)
 
