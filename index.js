@@ -16,11 +16,11 @@ function createMovieRecorderStream (win, options_) {
     '-y',
     '-f', 'image2pipe',
     '-r', '' + (+fps),
-    // we use jpeg here because the most common version of ffmpeg (the one
-    // that ships with homebrew) is broken and crashes when you feed it PNG data
-    //  https://trac.ffmpeg.org/ticket/1272
-    '-vcodec', 'mjpeg',
-    '-i', '-'
+    '-i', '-',
+    '-c:v', 'libvpx',
+    '-auto-alt-ref', '0',
+    '-pix_fmt', 'yuva420p',
+    '-metadata:s:v:0', 'alpha_mode="1"'
   ]
 
   var outFile = options.output
@@ -38,6 +38,7 @@ function createMovieRecorderStream (win, options_) {
   }
 
   var ffmpeg = spawn(ffmpegPath, args)
+  var ffmpegClosePromise = new Promise(resolve => ffmpeg.on('close', resolve))
 
   function appendFrame (next) {
     // This is dumb, but sometimes electron's capture fails silently and returns
@@ -46,11 +47,12 @@ function createMovieRecorderStream (win, options_) {
     function tryCapture () {
       try {
         win.capturePage(function (image) {
-          var jpeg = image.toJpeg(100)
-          if (jpeg.length === 0) {
+          var png = image.toPNG()
+
+          if (png.length === 0) {
             setTimeout(tryCapture, 10)
           } else {
-            ffmpeg.stdin.write(jpeg, function (err) {
+            ffmpeg.stdin.write(png, function (err) {
               next(err)
             })
           }
@@ -64,6 +66,7 @@ function createMovieRecorderStream (win, options_) {
 
   function endMovie () {
     ffmpeg.stdin.end()
+    return ffmpegClosePromise
   }
 
   var result = {
