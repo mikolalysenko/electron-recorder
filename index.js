@@ -38,6 +38,7 @@ function createMovieRecorderStream (win, options_) {
   }
 
   var ffmpeg = spawn(ffmpegPath, args)
+  var ffmpegClosePromise = new Promise(resolve => ffmpeg.on('close', resolve))
 
   function appendFrame (next) {
     // This is dumb, but sometimes electron's capture fails silently and returns
@@ -65,6 +66,7 @@ function createMovieRecorderStream (win, options_) {
 
   function endMovie () {
     ffmpeg.stdin.end()
+    return ffmpegClosePromise
   }
 
   var result = {
