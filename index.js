@@ -20,7 +20,8 @@ function createMovieRecorderStream (win, options_) {
     // that ships with homebrew) is broken and crashes when you feed it PNG data
     //  https://trac.ffmpeg.org/ticket/1272
     '-vcodec', 'mjpeg',
-    '-i', '-'
+    '-i', '-',
+    '-movflags', 'frag_keyframe+faststart'
   ]
 
   var outFile = options.output
