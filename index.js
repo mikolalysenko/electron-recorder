@@ -21,7 +21,8 @@ function createMovieRecorderStream (win, options_) {
     //  https://trac.ffmpeg.org/ticket/1272
     '-vcodec', 'mjpeg',
     '-i', '-',
-    '-movflags', 'frag_keyframe+faststart'
+    '-movflags', 'frag_keyframe+faststart',
+    '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2'
   ]
 
   var outFile = options.output
